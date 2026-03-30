@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sokoni Watch — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">🛒</div>
+      <div class="brand-text">
+        <div class="brand-name">Sokoni Watch</div>
+        <div class="brand-role" id="role-badge">Loading...</div>
+      </div>
+    </div>
+
+    <div class="user-card" id="user-card">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div class="user-info">
+        <div class="user-name" id="user-name">...</div>
+        <div class="user-role-label" id="user-role-label">...</div>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav-menu">
+      <!-- Injected by JS based on role -->
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="nairobi-tag">📍 Nairobi, Kenya 🇰🇪</div>
+      <div class="live-dot-row"><span class="pulse-dot"></span> Live System</div>
+      <a href="/logout" class="logout-btn">↩ Toka — Logout</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="topbar-right">
+        <div class="clock" id="clock"></div>
+        <button class="btn-sim" id="simulate-btn" style="display:none" onclick="simulateSales()">⚡ Simulate Sales</button>
+      </div>
+    </header>
+
+    <!-- ═══════════ ADMIN VIEWS ═══════════ -->
+
+    <!-- Admin: Dashboard -->
+    <div class="view" id="view-admin-dashboard">
+      <div class="stats-row" id="admin-stats"></div>
+      <div class="two-col">
+        <div>
+          <div class="section-head">🔔 Tahadhari za Hivi Karibuni <span class="sh-sub">Active Alerts</span></div>
+          <div class="alerts-strip" id="admin-alerts-strip">Loading...</div>
+        </div>
+        <div>
+          <div class="section-head">🔥 Bidhaa Zinazouza <span class="sh-sub">Hot Products</span></div>
+          <div class="hot-list" id="admin-hot-list">Loading...</div>
+        </div>
+      </div>
+      <div class="section-head mt">👩‍🌾 Wauza Bidhaa <span class="sh-sub">All Hawkers Overview</span></div>
+      <div class="hawker-cards" id="admin-hawker-cards"></div>
+    </div>
+
+    <!-- Admin: Hawkers Management -->
+    <div class="view" id="view-admin-hawkers">
+      <div class="view-toolbar">
+        <input class="search-box" id="hawker-search" placeholder="🔍 Tafuta mwuza..."/>
+        <button class="btn-primary" onclick="openAddHawkerModal()">+ Ongeza Mwuza</button>
+      </div>
+      <div class="hawkers-table-wrap">
+        <table class="data-table" id="hawkers-table">
+          <thead><tr>
+            <th>Jina</th><th>Location</th><th>Category</th>
+            <th>Products</th><th>Sales Today</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="hawkers-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Admin: Warehouse -->
+    <div class="view" id="view-admin-warehouse">
+      <div class="view-toolbar">
+        <input class="search-box" id="warehouse-search" placeholder="🔍 Tafuta bidhaa..."/>
+        <button class="btn-primary" onclick="openAddStockModal()">+ Ongeza Bidhaa</button>
+      </div>
+      <div class="section-head">📦 Hifadhi Yako <span class="sh-sub">Your Warehouse Stock</span></div>
+      <div class="warehouse-grid" id="warehouse-grid">Loading...</div>
+    </div>
+
+    <!-- Admin: Distribute Stock -->
+    <div class="view" id="view-admin-distribute">
+      <div class="section-head">🚚 Gawanya Bidhaa <span class="sh-sub">Distribute Stock to Hawkers</span></div>
+      <div class="distribute-form" id="distribute-form">
+        <div class="dist-card">
+          <div class="form-label">Chagua Mwuza — Select Hawker</div>
+          <select class="form-select" id="dist-hawker"></select>
+          <div class="form-label mt">Bidhaa — Product</div>
+          <select class="form-select" id="dist-product"></select>
+          <div class="form-label mt">Idadi — Quantity</div>
+          <input type="number" class="form-input-sm" id="dist-qty" placeholder="e.g. 50" min="1"/>
+          <div class="dist-info" id="dist-info"></div>
+          <button class="btn-primary mt" onclick="distributeStock()">🚚 Tuma Bidhaa — Send Stock</button>
+        </div>
+        <div class="dist-history">
+          <div class="section-head">📋 Hawker Stock Summary</div>
+          <div id="dist-hawker-summary"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin: Alerts -->
+    <div class="view" id="view-admin-alerts">
+      <div class="section-head">🚨 Tahadhari Zote <span class="sh-sub">All System Alerts</span></div>
+      <div id="admin-alerts-page"></div>
+    </div>
+
+    <!-- Admin: Market Pulse -->
+    <div class="view" id="view-admin-market">
+      <div class="section-head">📈 Hali ya Soko <span class="sh-sub">Market Pulse by Category</span></div>
+      <div class="market-grid" id="market-grid"></div>
+    </div>
+
+    <!-- ═══════════ HAWKER VIEWS ═══════════ -->
+
+    <!-- Hawker: Dashboard -->
+    <div class="view" id="view-hawker-dashboard">
+      <div class="stats-row" id="hawker-stats"></div>
+      <div class="two-col">
+        <div>
+          <div class="section-head">🔥 Bidhaa Zinazouza Leo <span class="sh-sub">What's Hot in the Market</span></div>
+          <div class="hot-list" id="hawker-hot-list">Loading...</div>
+        </div>
+        <div>
+          <div class="section-head">⚠️ Hifadhi Yangu Ndogo <span class="sh-sub">My Low Stock Items</span></div>
+          <div id="hawker-low-list">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hawker: My Stock -->
+    <div class="view" id="view-hawker-stock">
+      <div class="section-head">📦 Bidhaa Zangu <span class="sh-sub">My Product Stock</span></div>
+      <div id="hawker-products-list">Loading...</div>
+    </div>
+
+    <!-- Hawker: Market Pulse -->
+    <div class="view" id="view-hawker-market">
+      <div class="section-head">📈 Hali ya Soko <span class="sh-sub">Market Pulse — See What's Selling</span></div>
+      <div class="market-grid" id="hawker-market-grid"></div>
+    </div>
+
+    <!-- Hawker: Alerts -->
+    <div class="view" id="view-hawker-alerts">
+      <div class="section-head">🔔 Tahadhari Zangu <span class="sh-sub">My Stock Alerts</span></div>
+      <div id="hawker-alerts-page"></div>
+    </div>
+  </main>
+
+  <!-- ═══════════ MODALS ═══════════ -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-box" id="modal-box">
+      <button class="modal-close-btn" onclick="closeModalDirect()">✕</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Loading overlay shown until JS boots -->
+  <div id="boot-loader" style="
+    position:fixed;inset:0;background:#0b1340;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    z-index:9999;transition:opacity 0.4s;
+  ">
+    <div style="font-size:48px;margin-bottom:20px;animation:spin 2s linear infinite">🛒</div>
+    <div style="font-family:'Playfair Display',serif;font-size:24px;color:#f0b429;margin-bottom:8px">Sokoni Watch</div>
+    <div style="font-size:14px;color:#9aa5d4">Inapakia... Loading your dashboard</div>
+    <div style="margin-top:24px;width:200px;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden">
+      <div style="height:100%;background:linear-gradient(90deg,#1a2f7a,#f0b429);animation:loading-bar 1.5s ease-in-out infinite;"></div>
+    </div>
+  </div>
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes loading-bar {
+      0% { width:0%;margin-left:0 }
+      50% { width:80%;margin-left:10% }
+      100% { width:0%;margin-left:100% }
+    }
+  </style>
+  <script>
+    // Hide loader once app boots
+    window.__hideLoader = function() {
+      const l = document.getElementById('boot-loader');
+      if(l){ l.style.opacity='0'; setTimeout(()=>l.remove(),400); }
+    };
+  </script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
