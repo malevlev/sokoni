@@ -15,6 +15,8 @@ def get_conn():
     url = DATABASE_URL
     if url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql://", 1)
+    # Strip channel_binding — not supported by psycopg2
+    url = url.replace("&channel_binding=require", "").replace("?channel_binding=require&", "?").replace("?channel_binding=require", "")
     return psycopg2.connect(url, cursor_factory=psycopg2.extras.RealDictCursor)
 
 def db_query(sql, params=()):
