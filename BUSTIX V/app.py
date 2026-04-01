@@ -13,6 +13,9 @@ DATABASE_URL = os.environ.get('DATABASE_URL', '')
 if DATABASE_URL.startswith('postgres://'):
     DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 
+# psycopg2 does not support channel_binding — strip it out
+DATABASE_URL = DATABASE_URL.replace('&channel_binding=require', '').replace('?channel_binding=require&', '?').replace('?channel_binding=require', '')
+
 def get_db():
     conn = psycopg2.connect(DATABASE_URL)
     return conn
@@ -355,7 +358,10 @@ def seed_data():
     conn.commit()
     conn.close()
 
+
+# Run on startup — works with both gunicorn and direct python
+init_db()
+seed_data()
+
 if __name__ == '__main__':
-    init_db()
-    seed_data()
     app.run(debug=True, port=5000)
