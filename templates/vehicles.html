@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Vehicles{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Vehicles</h1>
+  <a href="{{ url_for('add_vehicle') }}" class="btn btn-primary">+ Add Vehicle</a>
+</div>
+<div class="card">
+  <div class="card-body">
+    {% if vehicles %}
+    <table class="table">
+      <thead><tr><th>Name</th><th>Registration</th><th>Make/Model</th><th>Year</th><th>Status</th><th>Fuel</th><th>Driver</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for v in vehicles %}
+        <tr>
+          <td><strong>{{ v.name }}</strong></td>
+          <td>{{ v.registration }}</td>
+          <td>{{ v.make }} {{ v.model }}</td>
+          <td>{{ v.year or '—' }}</td>
+          <td><span class="badge badge-{{ v.status }}">{{ v.status_label() }}</span></td>
+          <td>
+            <div class="fuel-bar"><div class="fuel-fill" style="width:{{ v.fuel_level }}%;background:{% if v.fuel_level > 50 %}var(--green){% elif v.fuel_level > 20 %}var(--amber){% else %}var(--red){% endif %}"></div></div>
+            {{ v.fuel_level }}%
+          </td>
+          <td>{{ v.current_driver.full_name if v.current_driver else '—' }}</td>
+          <td class="actions">
+            <a href="{{ url_for('edit_vehicle', vid=v.id) }}" class="btn btn-sm">Edit</a>
+            <form method="POST" action="{{ url_for('delete_vehicle', vid=v.id) }}" style="display:inline;" onsubmit="return confirm('Delete this vehicle?')">
+              <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty-msg">No vehicles yet. <a href="{{ url_for('add_vehicle') }}">Add one</a>.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
