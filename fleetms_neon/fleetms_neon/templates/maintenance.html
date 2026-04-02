@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Maintenance{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Maintenance</h1>
+  <a href="{{ url_for('add_maintenance') }}" class="btn btn-primary">+ Add Record</a>
+</div>
+<div class="card">
+  <div class="card-body">
+    {% if records %}
+    <table class="table">
+      <thead><tr><th>Vehicle</th><th>Type</th><th>Description</th><th>Date</th><th>Cost</th><th>Status</th><th>Next Due</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for m in records %}
+        <tr>
+          <td>{{ m.vehicle.name }}</td>
+          <td>{{ m.type }}</td>
+          <td>{{ m.description or '—' }}</td>
+          <td>{{ m.date.strftime('%d %b %Y') }}</td>
+          <td>KES {{ '%.2f'|format(m.cost) }}</td>
+          <td><span class="badge badge-{{ m.status }}">{{ m.status_label() }}</span></td>
+          <td>{{ m.next_due.strftime('%d %b %Y') if m.next_due else '—' }}</td>
+          <td class="actions">
+            <form method="POST" action="{{ url_for('delete_maintenance', mid=m.id) }}" style="display:inline;" onsubmit="return confirm('Delete this record?')">
+              <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty-msg">No maintenance records yet. <a href="{{ url_for('add_maintenance') }}">Add one</a>.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

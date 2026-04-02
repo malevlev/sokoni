@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Edit Vehicle{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Edit Vehicle</h1>
+  <a href="{{ url_for('vehicles') }}" class="btn">← Back</a>
+</div>
+<div class="card" style="max-width:600px;">
+  <div class="card-body">
+    <form method="POST">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Vehicle Name *</label>
+          <input type="text" name="name" value="{{ vehicle.name }}" required>
+        </div>
+        <div class="form-group">
+          <label>Registration *</label>
+          <input type="text" name="registration" value="{{ vehicle.registration }}" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Make</label>
+          <input type="text" name="make" value="{{ vehicle.make or '' }}">
+        </div>
+        <div class="form-group">
+          <label>Model</label>
+          <input type="text" name="model" value="{{ vehicle.model or '' }}">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Year</label>
+          <input type="number" name="year" value="{{ vehicle.year or '' }}" min="1990" max="2030">
+        </div>
+        <div class="form-group">
+          <label>Fuel Level (%)</label>
+          <input type="number" name="fuel_level" value="{{ vehicle.fuel_level }}" min="0" max="100">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Status</label>
+          <select name="status">
+            {% for val, lbl in [('active','Active'),('maintenance','Maintenance'),('stalled','Stalled'),('inactive','Inactive')] %}
+            <option value="{{ val }}" {% if vehicle.status == val %}selected{% endif %}>{{ lbl }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Assign Driver</label>
+          <select name="driver_id">
+            <option value="">— None —</option>
+            {% for d in drivers %}
+            <option value="{{ d.id }}" {% if vehicle.driver_id == d.id %}selected{% endif %}>{{ d.full_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
